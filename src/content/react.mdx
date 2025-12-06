@@ -1,0 +1,322 @@
+---
+title: Picobel for React
+layout: Page
+menuTitle: React
+menuPriority: 5
+description: Picobel is available as a set of React components, giving you full control over your audio player UI.
+---
+
+> **Note:** Experimental as of version 3.0.x
+
+Picobel is also available as a set of React components. This gives you native React integration with full control over your audio player UI.
+
+<picobel-player data-theme="default">
+    <audio
+        src="/audio-examples/taken-at-the-flood.mp3"
+        title="Taken at the Flood"
+        data-artist="Freeze Them"
+        controls
+    >
+        Your browser does not support the <code>audio</code> element.
+    </audio>
+</picobel-player>
+
+<ToC
+    heading="On this page:"
+    items={[
+        {
+            title: "Installation",
+            children: ["Basic import"]
+        },
+        {
+            title: "Usage",
+            children: ["Standalone player", "Playlist mode", "Custom layouts"]
+        },
+        {
+            title: "Components",
+            children: [
+                "Picobel",
+                "PicobelProvider",
+                "PlayPause",
+                "Title",
+                "Artist",
+                "CurrentTime",
+                "Duration",
+                "Progress",
+                "Volume",
+                "Mute"
+            ]
+        },
+        "Controlling players externally"
+    ]}
+/>
+
+---
+
+## Installation
+
+### Basic import
+
+The React components are included in the main Picobel package. Install Picobel as you normally would:
+
+```bash
+yarn add picobel
+# or
+npm install picobel
+```
+
+Then import the components from `picobel/react`:
+
+```jsx
+import Picobel, {
+    PicobelProvider,
+    PlayPause,
+    Artist,
+    Title,
+    CurrentTime,
+    Duration,
+    Progress,
+    Volume,
+    Mute
+} from "picobel/react";
+```
+
+Don't forget to include the CSS for your chosen [theme](/themes) if you want styled players:
+
+```jsx
+import "picobel/build/picobel.default.css";
+```
+
+---
+
+## Usage
+
+### Standalone player
+
+The simplest way to use Picobel in React is with a standalone `<Picobel>` component. This creates a fully-functional audio player with all the default controls:
+
+```jsx
+import Picobel from "picobel/react";
+
+const MyComponent = () => (
+    <Picobel
+        src="/path/to/audio.mp3"
+        title="Song Title"
+        artist="Artist Name"
+        theme="default"
+    />
+);
+```
+
+When used without a `PicobelProvider`, the `<Picobel>` component automatically wraps itself in a provider. This is perfect for simple use cases where you just need one or two independent players.
+
+### Playlist mode
+
+If you have multiple audio players on a page and want them to interact (e.g. pausing one when another starts playing), wrap them in a `<PicobelProvider>`:
+
+```jsx
+import Picobel, { PicobelProvider } from "picobel/react";
+
+const Playlist = () => (
+    <PicobelProvider theme="default">
+        <Picobel
+            src="/path/to/track-one.mp3"
+            title="Track One"
+            artist="Artist A"
+        />
+        <Picobel
+            src="/path/to/track-two.mp3"
+            title="Track Two"
+            artist="Artist B"
+        />
+        <Picobel
+            src="/path/to/track-three.mp3"
+            title="Track Three"
+            artist="Artist C"
+        />
+    </PicobelProvider>
+);
+```
+
+When players share a `PicobelProvider`, only one can play at a time – starting a new track will automatically pause the currently playing one.
+
+The `theme` prop on `PicobelProvider` sets the default theme for all child players, but individual `<Picobel>` components can override this with their own `theme` prop.
+
+### Custom layouts
+
+The real power of the React components comes from the ability to create custom layouts. Instead of using the default player UI, you can compose your own using the individual sub-components:
+
+```jsx
+import Picobel, {
+    PicobelProvider,
+    PlayPause,
+    Title,
+    Artist,
+    CurrentTime
+} from "picobel/react";
+
+const CustomPlayer = () => (
+    <PicobelProvider theme="skeleton">
+        <Picobel
+            theme="none"
+            src="/path/to/audio.mp3"
+            title="Custom Layout"
+            artist="Picobel"
+        >
+            <Title />
+            <PlayPause />
+            <Artist />
+            <CurrentTime />
+        </Picobel>
+    </PicobelProvider>
+);
+```
+
+When you pass children to the `<Picobel>` component, it will render those children instead of the default player UI. This gives you complete control over which elements are displayed and in what order.
+
+> **Note:** Setting `theme="none"` on a `<Picobel>` component removes the default theme styling, giving you a clean slate for custom CSS.
+
+---
+
+## Components
+
+### Picobel
+
+The main player component. Renders an audio element and (by default) a complete set of player controls.
+
+**Props:**
+
+| Prop        | Type        | Required | Description                                          |
+| ----------- | ----------- | -------- | ---------------------------------------------------- |
+| `src`       | `string`    | ✓        | URL of the audio file                                |
+| `id`        | `string`    |          | Unique identifier for the player (defaults to `src`) |
+| `title`     | `string`    |          | Track title (defaults to filename)                   |
+| `artist`    | `string`    |          | Artist name                                          |
+| `theme`     | `string`    |          | Theme name (overrides provider theme)                |
+| `className` | `string`    |          | Additional CSS class names                           |
+| `children`  | `ReactNode` |          | Custom player UI (replaces default)                  |
+
+```jsx
+<Picobel
+    src="/audio/song.mp3"
+    id="my-player"
+    title="Song Title"
+    artist="Artist Name"
+    theme="default"
+/>
+```
+
+### PicobelProvider
+
+Context provider that manages shared state between multiple players. Wrap your players in this component to enable playlist-style behaviour.
+
+**Props:**
+
+| Prop       | Type        | Required | Description                         |
+| ---------- | ----------- | -------- | ----------------------------------- |
+| `theme`    | `string`    |          | Default theme for all child players |
+| `children` | `ReactNode` | ✓        | Child components                    |
+
+```jsx
+<PicobelProvider theme="skeleton">
+    {/* Picobel players go here */}
+</PicobelProvider>
+```
+
+### PlayPause
+
+A button to toggle play/pause state.
+
+**Props:**
+
+| Prop        | Type     | Required | Description                                                               |
+| ----------- | -------- | -------- | ------------------------------------------------------------------------- |
+| `trackKey`  | `string` |          | ID of the track to control (optional when inside a `<Picobel>` component) |
+| `className` | `string` |          | Additional CSS class names                                                |
+
+```jsx
+<PlayPause />
+```
+
+### Title
+
+Displays the track title.
+
+```jsx
+<Title />
+```
+
+### Artist
+
+Displays the artist name.
+
+```jsx
+<Artist />
+```
+
+### CurrentTime
+
+Displays the current playback position (formatted as `M:SS`).
+
+```jsx
+<CurrentTime />
+```
+
+### Duration
+
+Displays the total duration of the track (formatted as `M:SS`).
+
+```jsx
+<Duration />
+```
+
+### Progress
+
+A range slider for seeking through the track. Also displays buffering progress.
+
+```jsx
+<Progress />
+```
+
+### Volume
+
+A range slider for controlling volume level.
+
+```jsx
+<Volume />
+```
+
+### Mute
+
+A button to toggle mute state.
+
+```jsx
+<Mute />
+```
+
+---
+
+## Controlling players externally
+
+Sub-components like `<PlayPause>` can be used outside of a `<Picobel>` component, as long as they're within the same `<PicobelProvider>`. In this case, you need to specify which player to control using the `trackKey` prop:
+
+```jsx
+import Picobel, { PicobelProvider, PlayPause } from "picobel/react";
+
+const ExternalControls = () => (
+    <PicobelProvider>
+        <Picobel id="my-track" src="/audio/song.mp3" title="Song Title" />
+
+        {/* This button controls the player above */}
+        <div className="external-controls">
+            <PlayPause trackKey="my-track" />
+        </div>
+    </PicobelProvider>
+);
+```
+
+The `trackKey` should match the `id` prop of the `<Picobel>` component you want to control. If no `id` is specified on the player, the `src` URL is used as the key.
+
+This pattern is useful for creating custom interfaces, like a global play button in a site header that controls the currently active player.
+
+<script src="/picobel-showcase.components.js"></script>
