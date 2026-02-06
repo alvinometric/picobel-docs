@@ -47,7 +47,18 @@ Picobel is also available as a set of React components. This gives you native Re
                 "Mute"
             ]
         },
-        "Controlling players externally"
+        {
+            title: "Controlling players externally",
+            children: [
+                "usePicobel",
+                "getTrackState(id)",
+                "isTrackPlaying(id)",
+                "playTrack(id)",
+                "pauseTrack(id)",
+                "setMuted(id, muted)",
+                "seekTo(id, time)"
+            ]
+        }
     ]}
 />
 
@@ -172,7 +183,7 @@ const CustomPlayer = () => (
 );
 ```
 
-When you pass children to the `<Picobel>` component, it will render those children instead of the default player UI. This gives you complete control over which elements are displayed and in what order.
+When you pass children to the `<Picobel>` component, it will render those children instead of the default player UI. This gives you complete control over which elements are displayed and in what order[...]
 
 > **Note:** Setting `theme="none"` on a `<Picobel>` component removes the default theme styling, giving you a clean slate for custom CSS.
 
@@ -298,25 +309,44 @@ A button to toggle mute state.
 
 ## Controlling players externally
 
-Sub-components like `<PlayPause>` can be used outside of a `<Picobel>` component, as long as they're within the same `<PicobelProvider>`. In this case, you need to specify which player to control using the `trackKey` prop:
-
-```jsx
-import Picobel, { PicobelProvider, PlayPause } from "picobel/react";
-
-const ExternalControls = () => (
-    <PicobelProvider>
-        <Picobel id="my-track" src="/audio/song.mp3" title="Song Title" />
-
-        {/* This button controls the player above */}
-        <div className="external-controls">
-            <PlayPause trackKey="my-track" />
-        </div>
-    </PicobelProvider>
-);
-```
+Some sub-components like `<PlayPause>` can be used outside of a `<Picobel>` component, as long as they're within the same `<PicobelProvider>`. In that case, you need to specify which player to control using a `trackKey` prop.
 
 The `trackKey` should match the `id` prop of the `<Picobel>` component you want to control. If no `id` is specified on the player, the `src` URL is used as the key.
 
 This pattern is useful for creating custom interfaces, like a global play button in a site header that controls the currently active player.
+
+> **Note:** The APIs below are not currently part of the public/stable Picobel docs and may change between releases.
+
+### usePicobel
+
+React hook for accessing Picobel’s controller API from within a `<PicobelProvider>`.
+
+Must be called within the context of a `<PicobelProvider>`.
+
+### getTrackState(id)
+
+Returns the current state for a track.
+
+### isTrackPlaying(id)
+
+Boolean helper for checking whether a track is currently playing.
+
+### playTrack(id)
+
+Start playback for a track.
+
+### pauseTrack(id)
+
+Pause playback for a track.
+
+### setMuted(id, muted)
+
+Set the muted state for a specific track.
+
+### seekTo(id, time)
+
+Seek to a specific playback time (in seconds).
+
+---
 
 <script src="/picobel-showcase.components.js"></script>
