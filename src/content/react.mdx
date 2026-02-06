@@ -309,13 +309,26 @@ A button to toggle mute state.
 
 ## Controlling players externally
 
-Some sub-components like `<PlayPause>` can be used outside of a `<Picobel>` component, as long as they're within the same `<PicobelProvider>`. In that case, you need to specify which player to control using a `trackKey` prop.
+Sub-components like `<PlayPause>` can be used outside of a `<Picobel>` component, as long as they're within the same `<PicobelProvider>`. In this case, you need to specify which player to control using the `trackKey` prop:
+
+```jsx
+import Picobel, { PicobelProvider, PlayPause } from "picobel/react";
+
+const ExternalControls = () => (
+    <PicobelProvider>
+        <Picobel id="my-track" src="/audio/song.mp3" title="Song Title" />
+
+        {/* This button controls the player above */}
+        <div className="external-controls">
+            <PlayPause trackKey="my-track" />
+        </div>
+    </PicobelProvider>
+);
+```
 
 The `trackKey` should match the `id` prop of the `<Picobel>` component you want to control. If no `id` is specified on the player, the `src` URL is used as the key.
 
 This pattern is useful for creating custom interfaces, like a global play button in a site header that controls the currently active player.
-
-> **Note:** The APIs below are not currently part of the public/stable Picobel docs and may change between releases.
 
 ### usePicobel
 
